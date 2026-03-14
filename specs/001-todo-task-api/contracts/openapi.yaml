@@ -1,0 +1,193 @@
+openapi: 3.1.0
+info:
+  title: Microsoft To Do Task API
+  version: 1.0.0
+  summary: Serverless API for creating one task in a caller-specified Microsoft To Do list.
+servers:
+  - url: https://{functionAppHost}
+    variables:
+      functionAppHost:
+        default: example.azurewebsites.net
+paths:
+  /api/tasks:
+    post:
+      operationId: createTask
+      summary: Create a task in a caller-specified Microsoft To Do list
+      description: Accepts task text and list ID, trims leading and trailing whitespace, and creates exactly one Microsoft To Do task in the specified list for the configured account.
+      security:
+        - functionKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+            examples:
+              minimal:
+                value:
+                  listId: AQMkAGI2...
+                  text: Pick up groceries
+              trimmed:
+                value:
+                  listId: "  AQMkAGI2...  "
+                  text: "  Call the dentist  "
+      responses:
+        '201':
+          description: Task created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTaskSuccessResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    data:
+                      taskId: AAMkAGI2...
+                      title: Pick up groceries
+                      listId: AQMkAGI2...
+                      listName: Tasks
+                      createdAtUtc: 2026-03-14T15:05:22Z
+        '400':
+          description: Request payload is missing required task text or contains only whitespace.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                blankText:
+                  value:
+                    success: false
+                    error:
+                      code: validation.task_text_required
+                      message: Task text is required.
+                      retryable: false
+                blankListId:
+                  value:
+                    success: false
+                    error:
+                      code: validation.list_id_required
+                      message: Task list ID is required.
+                      retryable: false
+        '401':
+          description: Function key or upstream auth is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  value:
+                    success: false
+                    error:
+                      code: auth.unauthorized
+                      message: The request is not authorized for this endpoint.
+                      retryable: false
+        '502':
+          description: Microsoft Graph responded with a non-transient upstream failure while resolving the list or creating the task.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                graphFailure:
+                  value:
+                    success: false
+                    error:
+                      code: todo.upstream_failure
+                      message: Microsoft To Do could not create the task.
+                      retryable: false
+        '503':
+          description: Microsoft To Do or token acquisition is temporarily unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unavailable:
+                  value:
+                    success: false
+                    error:
+                      code: todo.temporarily_unavailable
+                      message: Microsoft To Do is temporarily unavailable. Retry later.
+                      retryable: true
+components:
+  securitySchemes:
+    functionKey:
+      type: apiKey
+      in: header
+      name: x-functions-key
+      description: Azure Functions host or function key. A stronger auth layer such as App Service Authentication or API Management can be added later without changing the request body.
+  schemas:
+    CreateTaskRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - text
+        - listId
+      properties:
+        listId:
+          type: string
+          description: Microsoft To Do list identifier that should receive the new task.
+          minLength: 1
+        text:
+          type: string
+          description: Task title to create. Leading and trailing whitespace is trimmed before persistence.
+          minLength: 1
+    CreateTaskSuccessResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - success
+        - data
+      properties:
+        success:
+          type: boolean
+          const: true
+        data:
+          type: object
+          additionalProperties: false
+          required:
+            - taskId
+            - title
+            - listId
+            - listName
+          properties:
+            taskId:
+              type: string
+            title:
+              type: string
+            listId:
+              type: string
+            listName:
+              type: string
+            createdAtUtc:
+              type: string
+              format: date-time
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+            - retryable
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+            details:
+              type: object
+              additionalProperties: true

@@ -56,45 +56,6 @@ Automated tests are a first-class deliverable, not an afterthought:
 **Rationale**: The Siri ↔ API ↔ Microsoft To Do chain has multiple failure surfaces; comprehensive
 automated tests are the primary safeguard against silent regressions.
 
-### III. User Experience Consistency
-
-Every interaction surface exposed to Siri or end-users MUST conform to a unified contract:
-
-- API responses MUST use a single, consistent error envelope schema (`{ "error": { "code", "message" } }`).
-- HTTP status codes MUST follow RFC 9110 semantics; ad-hoc status codes are prohibited.
-- All date/time values MUST be serialized as ISO 8601 UTC strings.
-- User-facing error messages MUST be actionable and free of internal stack traces or system identifiers.
-- Breaking changes to the public API MUST follow semantic versioning and require a deprecation period of
-  at least one release cycle before removal.
-
-**Rationale**: Siri integration surfaces API behavior directly to users through voice responses; ambiguous
-or inconsistent contracts create confusing and unreliable voice experiences.
-
-### IV. Performance Requirements
-
-The API MUST remain responsive under realistic load, respecting voice-interaction latency expectations:
-
-- p95 response time for all endpoints MUST be ≤ 500 ms under nominal load.
-- p99 response time MUST NOT exceed 2000 ms.
-- The API MUST handle at least 100 concurrent requests without error rate exceeding 0.1%.
-- Any operation touching an external service (Microsoft To Do API) MUST implement a timeout of ≤ 3 s,
-  with graceful degradation returning a structured error rather than hanging.
-- Performance benchmarks MUST be run and reviewed as part of every release candidate.
-
-**Rationale**: Siri actions are perceived as instant by users; latency above ~500 ms degrades the voice
-experience and signals failure even when the underlying task succeeds.
-
-## Security Requirements
-
-- All endpoints MUST require authenticated access; unauthenticated requests MUST return `401`.
-- OAuth tokens and secrets MUST be stored in environment variables or a secrets manager; they MUST NOT
-  appear in source code, logs, or API responses.
-- All inputs from Siri or external callers MUST be validated and sanitized at the API boundary before
-  use (OWASP A03 — Injection).
-- HTTPS MUST be enforced for all traffic; plain HTTP endpoints are prohibited in any environment.
-- Dependency audits (e.g., `npm audit`, `pip-audit`) MUST be run and reviewed with every dependency
-  update and at minimum once per month.
-
 ## Development Workflow
 
 - All new work MUST be developed on a feature branch; direct commits to `main` are prohibited.

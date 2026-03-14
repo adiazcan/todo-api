@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "TodoApi__Graph__TenantId": "<tenant-id>",
+    "TodoApi__Graph__ClientId": "<client-id>",
+    "TodoApi__Graph__ClientSecret": "<client-secret>",
+    "TodoApi__Graph__RefreshToken": "<refresh-token>",
+    "TodoApi__Graph__Scopes": "https://graph.microsoft.com/Tasks.ReadWrite offline_access"
+  }
+}

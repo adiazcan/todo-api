@@ -11,10 +11,10 @@
 
 **Purpose**: Create the solution, projects, and baseline configuration required for implementation.
 
-- [ ] T001 Create the solution and project skeleton in `/home/adiazcan/github/todo-api/TodoApi.sln`, `/home/adiazcan/github/todo-api/src/TodoApi.Functions/TodoApi.Functions.csproj`, `/home/adiazcan/github/todo-api/tools/TodoApi.AuthBootstrap/TodoApi.AuthBootstrap.csproj`, `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/TodoApi.UnitTests.csproj`, `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/TodoApi.IntegrationTests.csproj`, and `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/TodoApi.ContractTests.csproj`
-- [ ] T002 Configure the Azure Functions isolated worker host and package references in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Program.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/host.json`
-- [ ] T003 [P] Add local configuration and secret-handling examples in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/local.settings.json.example` and `/home/adiazcan/github/todo-api/README.md`
-- [ ] T004 [P] Add test SDK, FluentAssertions, and host-backed test dependencies in `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/TodoApi.UnitTests.csproj`, `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/TodoApi.IntegrationTests.csproj`, and `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/TodoApi.ContractTests.csproj`
+- [x] T001 Create the solution and project skeleton in `/home/adiazcan/github/todo-api/TodoApi.sln`, `/home/adiazcan/github/todo-api/src/TodoApi.Functions/TodoApi.Functions.csproj`, `/home/adiazcan/github/todo-api/tools/TodoApi.AuthBootstrap/TodoApi.AuthBootstrap.csproj`, `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/TodoApi.UnitTests.csproj`, `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/TodoApi.IntegrationTests.csproj`, and `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/TodoApi.ContractTests.csproj`
+- [x] T002 Configure the Azure Functions isolated worker host and package references in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Program.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/host.json`
+- [x] T003 [P] Add local configuration and secret-handling examples in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/local.settings.json.example` and `/home/adiazcan/github/todo-api/README.md`
+- [x] T004 [P] Add test SDK, FluentAssertions, and host-backed test dependencies in `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/TodoApi.UnitTests.csproj`, `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/TodoApi.IntegrationTests.csproj`, and `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/TodoApi.ContractTests.csproj`
 
 ---
 
@@ -24,12 +24,12 @@
 
 **⚠️ CRITICAL**: Complete this phase before starting user story work.
 
-- [ ] T005 Create Graph runtime options and configuration validation in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Options/GraphOptions.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Options/GraphOptionsSetup.cs`
-- [ ] T006 [P] Create shared request and response DTOs in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/CreateTaskRequest.cs`, `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/CreateTaskSuccessResponse.cs`, and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/ErrorResponse.cs`
-- [ ] T007 [P] Implement delegated token acquisition abstractions in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Auth/IGraphAccessTokenProvider.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Auth/MsalGraphAccessTokenProvider.cs`
-- [ ] T008 [P] Implement the Graph client factory with timeout and retry policy in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Auth/GraphServiceClientFactory.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Program.cs`
-- [ ] T009 Create shared API error mapping and envelope helpers in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoErrorMapper.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/ApiResponseFactory.cs`
-- [ ] T010 Create the bootstrap utility options and interactive consent flow skeleton in `/home/adiazcan/github/todo-api/tools/TodoApi.AuthBootstrap/AuthBootstrapOptions.cs` and `/home/adiazcan/github/todo-api/tools/TodoApi.AuthBootstrap/Program.cs`
+- [x] T005 Create Graph runtime options and configuration validation in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Options/GraphOptions.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Options/GraphOptionsSetup.cs`
+- [x] T006 [P] Create shared request and response DTOs in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/CreateTaskRequest.cs`, `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/CreateTaskSuccessResponse.cs`, and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/ErrorResponse.cs`
+- [x] T007 [P] Implement delegated token acquisition abstractions in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Auth/IGraphAccessTokenProvider.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Auth/MsalGraphAccessTokenProvider.cs`
+- [x] T008 [P] Implement the Graph client factory with timeout and retry policy in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Auth/GraphServiceClientFactory.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Program.cs`
+- [x] T009 Create shared API error mapping and envelope helpers in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoErrorMapper.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/ApiResponseFactory.cs`
+- [x] T010 Create the bootstrap utility options and interactive consent flow skeleton in `/home/adiazcan/github/todo-api/tools/TodoApi.AuthBootstrap/AuthBootstrapOptions.cs` and `/home/adiazcan/github/todo-api/tools/TodoApi.AuthBootstrap/Program.cs`
 
 **Checkpoint**: The solution can bind configuration, acquire Graph access tokens, construct a Graph client, and emit stable API envelopes.
 
@@ -43,16 +43,16 @@
 
 ### Tests for User Story 1
 
-- [ ] T011 [P] [US1] Add success contract coverage for `POST /api/tasks`, including created task ID and target list ID, in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/CreateTaskSuccessContractTests.cs`
-- [ ] T012 [P] [US1] Add integration coverage for successful task creation, whitespace trimming, and multiline or punctuation-preserving task text in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskSuccessTests.cs`
-- [ ] T013 [P] [US1] Add unit coverage for list validation and task creation orchestration in `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/Services/TodoTaskServiceTests.cs`
+- [x] T011 [P] [US1] Add success contract coverage for `POST /api/tasks`, including created task ID and target list ID, in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/CreateTaskSuccessContractTests.cs`
+- [x] T012 [P] [US1] Add integration coverage for successful task creation, whitespace trimming, and multiline or punctuation-preserving task text in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskSuccessTests.cs`
+- [x] T013 [P] [US1] Add unit coverage for list validation and task creation orchestration in `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/Services/TodoTaskServiceTests.cs`
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Create normalized command and created-task models in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/NormalizedTaskCommand.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/CreatedTodoTask.cs`
-- [ ] T015 [P] [US1] Implement target-list lookup and task creation orchestration in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/ITodoTaskService.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoTaskService.cs`
-- [ ] T016 [US1] Implement the happy-path `POST /api/tasks` HTTP trigger in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Functions/CreateTaskFunction.cs`
-- [ ] T017 [US1] Wire task creation services and Graph registrations in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Program.cs`
+- [x] T014 [P] [US1] Create normalized command and created-task models in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/NormalizedTaskCommand.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/CreatedTodoTask.cs`
+- [x] T015 [P] [US1] Implement target-list lookup and task creation orchestration in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/ITodoTaskService.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoTaskService.cs`
+- [x] T016 [US1] Implement the happy-path `POST /api/tasks` HTTP trigger in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Functions/CreateTaskFunction.cs`
+- [x] T017 [US1] Wire task creation services and Graph registrations in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Program.cs`
 
 **Checkpoint**: User Story 1 creates one task in the caller-selected list and returns a success payload with task and list identifiers.
 

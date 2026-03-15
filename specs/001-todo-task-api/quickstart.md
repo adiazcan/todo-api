@@ -141,7 +141,7 @@ Validation outcomes to confirm:
 2. Configure app settings or Key Vault references for Graph and token secrets.
 3. Create a user-assigned managed identity for GitHub Actions deployment and assign it the `Website Contributor` role on the Function App.
 4. Add a federated credential on that managed identity for this GitHub repository and the deployment branch.
-5. Add GitHub repository variables `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, and `AZURE_FUNCTIONAPP_NAME`.
+5. Add GitHub Actions secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, and `AZURE_FUNCTIONAPP_NAME`.
 6. Enforce HTTPS-only traffic.
 7. Push to `main` or run the workflow in `.github/workflows/deploy-functions.yml` manually to publish the .NET 10 isolated worker function app.
 8. Verify with a live POST to `/api/tasks` using the function key.

@@ -86,7 +86,7 @@ The workflow uses OpenID Connect with `azure/login@v2`, which is the recommended
 1. Create a user-assigned managed identity in Azure.
 2. Assign the `Website Contributor` role to that identity on the target Function App.
 3. Add a federated credential on the managed identity for this GitHub repository and the branch that should deploy, typically `main`.
-4. Add these repository variables in GitHub Actions:
+4. Add these GitHub Actions secrets:
 	- `AZURE_CLIENT_ID`
 	- `AZURE_TENANT_ID`
 	- `AZURE_SUBSCRIPTION_ID`

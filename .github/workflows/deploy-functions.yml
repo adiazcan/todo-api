@@ -48,6 +48,7 @@ jobs:
         with:
           name: function-app-package
           path: ${{ github.workspace }}/${{ env.PUBLISH_OUTPUT_PATH }}
+          include-hidden-files: true
 
   deploy:
     runs-on: ubuntu-latest

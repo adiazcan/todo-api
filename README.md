@@ -77,6 +77,23 @@ Legacy migration path: the function app still accepts `TodoApi__Graph__RefreshTo
 - Preserve the 3-second Graph timeout and bounded retry defaults unless you have measured evidence that a different budget is required.
 - Enforce HTTPS-only traffic and install Graph secrets through app settings or Key Vault references, not plaintext files.
 
+## GitHub Actions Deployment
+
+The repository includes a deployment workflow at `.github/workflows/deploy-functions.yml` that builds the solution, runs the test suite, publishes `src/TodoApi.Functions`, and deploys the published output to Azure Functions.
+
+The workflow uses OpenID Connect with `azure/login@v2`, which is the recommended authentication model for Azure Functions deployments. Before the workflow can deploy, configure Azure and GitHub with these values:
+
+1. Create a user-assigned managed identity in Azure.
+2. Assign the `Website Contributor` role to that identity on the target Function App.
+3. Add a federated credential on the managed identity for this GitHub repository and the branch that should deploy, typically `main`.
+4. Add these repository variables in GitHub Actions:
+	- `AZURE_CLIENT_ID`
+	- `AZURE_TENANT_ID`
+	- `AZURE_SUBSCRIPTION_ID`
+	- `AZURE_FUNCTIONAPP_NAME`
+
+After that setup, deployments run automatically on pushes to `main` that affect the function app or the workflow, and can also be started manually with `workflow_dispatch`.
+
 ## Validation Status
 
 The repository uses separate unit, integration, and contract suites so validation, endpoint behavior, Graph boundary translation, and payload compatibility stay isolated.

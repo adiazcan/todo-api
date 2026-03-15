@@ -139,9 +139,12 @@ Validation outcomes to confirm:
 
 1. Provision an Azure Functions app on Linux Flex Consumption or Premium.
 2. Configure app settings or Key Vault references for Graph and token secrets.
-3. Enforce HTTPS-only traffic.
-4. Publish the .NET 10 isolated worker function app.
-5. Verify with a live POST to `/api/tasks` using the function key.
+3. Create a user-assigned managed identity for GitHub Actions deployment and assign it the `Website Contributor` role on the Function App.
+4. Add a federated credential on that managed identity for this GitHub repository and the deployment branch.
+5. Add GitHub repository variables `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, and `AZURE_FUNCTIONAPP_NAME`.
+6. Enforce HTTPS-only traffic.
+7. Push to `main` or run the workflow in `.github/workflows/deploy-functions.yml` manually to publish the .NET 10 isolated worker function app.
+8. Verify with a live POST to `/api/tasks` using the function key.
 
 Deployment notes:
 
@@ -149,6 +152,7 @@ Deployment notes:
 - Preserve the Graph request timeout at 3 seconds with bounded retries unless you have measured evidence to adjust it.
 - Do not deploy this app to classic Linux Consumption because the runtime target is unsupported there.
 - If the configured account is forced to re-consent, rerun the bootstrap workflow and replace the stored `TodoApi__Graph__UserTokenCache` value.
+- The deployment workflow uses OpenID Connect through `azure/login@v2` instead of a publish profile so Azure credentials do not need to be stored as a long-lived GitHub secret.
 
 ## Operational Notes
 

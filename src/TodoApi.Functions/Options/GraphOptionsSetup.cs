@@ -29,6 +29,7 @@ public sealed class GraphOptionsSetup : IConfigureNamedOptions<GraphOptions>, IV
 
         var section = _configuration.GetSection(GraphOptions.SectionName);
         section.Bind(options);
+        Normalize(options);
 
         var configuredScopes = ReadScopes(section);
         if (configuredScopes.Length > 0)
@@ -61,7 +62,7 @@ public sealed class GraphOptionsSetup : IConfigureNamedOptions<GraphOptions>, IV
 
         if (hasSerializedUserTokenCache && !IsBase64(options.UserTokenCache))
         {
-            failures.Add("TodoApi:Graph:UserTokenCache must be a valid Base64-encoded MSAL cache payload.");
+            failures.Add("TodoApi:Graph:UserTokenCache must be a valid Base64-encoded MSAL cache payload. Re-run TodoApi.AuthBootstrap and copy the emitted value exactly as a single line.");
         }
 
         if (hasRefreshToken && string.IsNullOrWhiteSpace(options.ClientSecret))
@@ -100,6 +101,17 @@ public sealed class GraphOptionsSetup : IConfigureNamedOptions<GraphOptions>, IV
         }
 
         return failures.Count == 0 ? ValidateOptionsResult.Success : ValidateOptionsResult.Fail(failures);
+    }
+
+    private static void Normalize(GraphOptions options)
+    {
+        options.TenantId = options.TenantId.Trim();
+        options.ClientId = options.ClientId.Trim();
+        options.ClientSecret = options.ClientSecret.Trim();
+        options.UserTokenCache = options.UserTokenCache.Trim();
+        options.AccountUsername = options.AccountUsername.Trim();
+        options.RefreshToken = options.RefreshToken.Trim();
+        options.BaseUrl = options.BaseUrl.Trim();
     }
 
     private static string[] ReadScopes(IConfigurationSection section)

@@ -115,6 +115,7 @@
 - [x] T036 [P] Add Siri Shortcuts-compatible payload schema contract coverage for the published task-creation request in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/SiriPayloadContractTests.cs`
 - [x] T037 [P] Add performance and concurrency validation for the 5-second response target and 100-concurrent-request bursts in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskPerformanceTests.cs` and `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md`
 - [x] T038 [P] Validate the first-time integrator quickstart flow against the published request and response contract in `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md` and `/home/adiazcan/github/todo-api/README.md`
+- [x] T039 [P] Add GitHub Actions deployment automation and OIDC setup guidance in `/home/adiazcan/github/todo-api/.github/workflows/deploy-functions.yml`, `/home/adiazcan/github/todo-api/README.md`, and `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md`
 
 ---
 

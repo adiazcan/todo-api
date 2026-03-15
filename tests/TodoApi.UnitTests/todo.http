@@ -1,0 +1,8 @@
+POST http://localhost:7071/api/tasks
+Content-Type: application/json
+x-functions-key: zzzz
+
+{
+    "listId" : "AAMkADVmOGE1YjFkLTdhNDktNDdjYy05Y2E3LTcxZWQ1NjE1ODI3NwAuAAAAAACWEzWe3NtmQa0NnZHNwjBKAQBOSDrpwnlZQ4UaOHpwntjvAAAAAAETAAA=",
+    "text" : "Test Task"
+}

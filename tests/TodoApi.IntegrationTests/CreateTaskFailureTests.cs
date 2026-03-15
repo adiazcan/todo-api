@@ -132,6 +132,7 @@ public sealed class CreateTaskFailureTests
     private static CreateTaskFunction CreateFunction(StubTodoTaskService todoTaskService)
     {
         return new CreateTaskFunction(
+            TestSerializerOptions.Create(),
             todoTaskService,
             new CreateTaskRequestValidator(new TodoErrorMapper()),
             new TodoErrorMapper(),

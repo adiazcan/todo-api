@@ -85,6 +85,7 @@ public sealed class CreateTaskSuccessTests
     private static CreateTaskFunction CreateFunction(CapturingTodoTaskService todoTaskService)
     {
         return new CreateTaskFunction(
+            TestSerializerOptions.Create(),
             todoTaskService,
             new CreateTaskRequestValidator(new TodoErrorMapper()),
             new TodoErrorMapper(),

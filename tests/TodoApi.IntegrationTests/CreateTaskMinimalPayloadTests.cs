@@ -80,6 +80,7 @@ public sealed class CreateTaskMinimalPayloadTests
     private static CreateTaskFunction CreateFunction(CountingTodoTaskService todoTaskService)
     {
         return new CreateTaskFunction(
+            TestSerializerOptions.Create(),
             todoTaskService,
             new CreateTaskRequestValidator(new TodoErrorMapper()),
             new TodoErrorMapper(),

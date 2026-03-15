@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsSecretStorageType": "files",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "TodoApi__Graph__TenantId": "<tenant-id>",
+    "TodoApi__Graph__ClientId": "<client-id>",
+    "TodoApi__Graph__UserTokenCache": "<base64-msal-user-token-cache>",
+    "TodoApi__Graph__AccountUsername": "<configured-account-username>",
+    "TodoApi__Graph__Scopes": "https://graph.microsoft.com/Tasks.ReadWrite offline_access",
+    "TodoApi__Graph__BaseUrl": "https://graph.microsoft.com/v1.0",
+    "TodoApi__Graph__RequestTimeoutSeconds": "3",
+    "TodoApi__Graph__MaxRetryAttempts": "2"
+  }
+}

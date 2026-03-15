@@ -62,6 +62,7 @@ public sealed class CreateTaskPerformanceTests
     private static CreateTaskFunction CreateFunction(DelayedTodoTaskService todoTaskService)
     {
         return new CreateTaskFunction(
+            TestSerializerOptions.Create(),
             todoTaskService,
             new CreateTaskRequestValidator(new TodoErrorMapper()),
             new TodoErrorMapper(),

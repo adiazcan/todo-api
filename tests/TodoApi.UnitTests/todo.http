@@ -1,8 +1,8 @@
 POST http://localhost:7071/api/tasks
 Content-Type: application/json
-x-functions-key: zzzz
+x-functions-key: <local-function-key>
 
 {
-    "listId" : "AAMkADVmOGE1YjFkLTdhNDktNDdjYy05Y2E3LTcxZWQ1NjE1ODI3NwAuAAAAAACWEzWe3NtmQa0NnZHNwjBKAQBOSDrpwnlZQ4UaOHpwntjvAAAAAAETAAA=",
+    "listId" : "<your-todo-list-id>",
     "text" : "Test Task"
 }

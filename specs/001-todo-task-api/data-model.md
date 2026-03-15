@@ -33,9 +33,9 @@
 - Fields:
   - `tenantId` (`string`, required)
   - `clientId` (`string`, required)
-  - `clientSecret` (`secret reference`, required for confidential client flow)
+  - `clientSecret` (`secret reference`, optional for legacy refresh-token fallback)
   - `userIdOrUpn` (`string`, optional): Stored only if needed for diagnostics or future `/users/{id}` Graph paths.
-  - `refreshToken` (`secret`, required)
+  - `userTokenCache` (`secret`, required): Serialized MSAL user token cache for the configured account.
   - `scopes` (`string[]`, required): Must include `Tasks.ReadWrite` and `offline_access` during consent/bootstrap.
 - Validation rules:
   - All secrets must be loaded from secret storage, not source-controlled files.

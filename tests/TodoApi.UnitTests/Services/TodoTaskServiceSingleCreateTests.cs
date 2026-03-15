@@ -12,10 +12,10 @@ using Xunit;
 
 namespace TodoApi.UnitTests.Services;
 
-public sealed class TodoTaskServiceTests
+public sealed class TodoTaskServiceSingleCreateTests
 {
     [Fact]
-    public async Task CreateTaskAsync_should_validate_the_requested_list_before_creating_the_task()
+    public async Task CreateTaskAsync_should_issue_exactly_one_create_request_after_list_validation_succeeds()
     {
         var handler = new RecordingHttpMessageHandler(
         [
@@ -33,58 +33,7 @@ public sealed class TodoTaskServiceTests
                 Content = JsonContent("""
                 {
                   "id": "task-456",
-                  "title": "Buy milk",
-                  "createdDateTime": "2026-03-14T10:15:30Z"
-                }
-                """)
-            }
-        ]);
-
-        var service = new TodoTaskService(CreateGraphClient(handler), new TodoErrorMapper(), NullLogger<TodoTaskService>.Instance);
-
-        var result = await service.CreateTaskAsync(new NormalizedTaskCommand(
-            Title: "Buy milk",
-            ListId: "list-123",
-            RequestedAtUtc: DateTimeOffset.Parse("2026-03-14T10:15:00Z")));
-
-        result.Id.Should().Be("task-456");
-        result.Title.Should().Be("Buy milk");
-        result.ListId.Should().Be("list-123");
-        result.ListName.Should().Be("Errands");
-        result.CreatedAtUtc.Should().Be(DateTimeOffset.Parse("2026-03-14T10:15:30Z"));
-
-        handler.Requests.Should().HaveCount(2);
-        handler.Requests[0].Method.Should().Be(HttpMethod.Get);
-        handler.Requests[0].RequestUri!.AbsolutePath.Should().EndWith("/me/todo/lists/list-123");
-        handler.Requests[1].Method.Should().Be(HttpMethod.Post);
-        handler.Requests[1].RequestUri!.AbsolutePath.Should().EndWith("/me/todo/lists/list-123/tasks");
-
-        using var postedTask = JsonDocument.Parse(handler.RequestBodies[1]);
-        postedTask.RootElement.GetProperty("title").GetString().Should().Be("Buy milk");
-    }
-
-    [Fact]
-    public async Task CreateTaskAsync_should_preserve_multiline_and_punctuation_in_the_created_graph_payload()
-    {
-        const string title = "Review agenda:\n- budget?\n- launch!";
-
-        var handler = new RecordingHttpMessageHandler(
-        [
-            new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = JsonContent("""
-                {
-                  "id": "list-999",
-                  "displayName": "Work"
-                }
-                """)
-            },
-            new HttpResponseMessage(HttpStatusCode.Created)
-            {
-                Content = JsonContent($$"""
-                {
-                  "id": "task-999",
-                  "title": {{JsonSerializer.Serialize(title)}}
+                  "title": "Buy milk"
                 }
                 """)
             }
@@ -93,12 +42,44 @@ public sealed class TodoTaskServiceTests
         var service = new TodoTaskService(CreateGraphClient(handler), new TodoErrorMapper(), NullLogger<TodoTaskService>.Instance);
 
         _ = await service.CreateTaskAsync(new NormalizedTaskCommand(
-            Title: title,
-            ListId: "list-999",
+            Title: "Buy milk",
+            ListId: "list-123",
             RequestedAtUtc: DateTimeOffset.UtcNow));
 
-        using var postedTask = JsonDocument.Parse(handler.RequestBodies[1]);
-        postedTask.RootElement.GetProperty("title").GetString().Should().Be(title);
+        handler.Requests.Should().HaveCount(2);
+        handler.Requests.Count(request => request.Method == HttpMethod.Get).Should().Be(1);
+        handler.Requests.Count(request => request.Method == HttpMethod.Post).Should().Be(1);
+    }
+
+    [Fact]
+    public async Task CreateTaskAsync_should_not_issue_a_create_request_when_list_validation_fails()
+    {
+        var handler = new RecordingHttpMessageHandler(
+        [
+            new HttpResponseMessage(HttpStatusCode.NotFound)
+            {
+                Content = JsonContent("""
+                {
+                  "error": {
+                    "code": "ErrorItemNotFound",
+                    "message": "The list was not found."
+                  }
+                }
+                """)
+            }
+        ]);
+
+        var service = new TodoTaskService(CreateGraphClient(handler), new TodoErrorMapper(), NullLogger<TodoTaskService>.Instance);
+
+        var action = async () => await service.CreateTaskAsync(new NormalizedTaskCommand(
+            Title: "Buy milk",
+            ListId: "missing-list",
+            RequestedAtUtc: DateTimeOffset.UtcNow));
+
+        await action.Should().ThrowAsync<TodoTaskOperationException>();
+
+        handler.Requests.Should().HaveCount(1);
+        handler.Requests[0].Method.Should().Be(HttpMethod.Get);
     }
 
     private static GraphServiceClient CreateGraphClient(HttpMessageHandler handler)
@@ -147,14 +128,9 @@ public sealed class TodoTaskServiceTests
 
         public List<HttpRequestMessage> Requests { get; } = [];
 
-        public List<string> RequestBodies { get; } = [];
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Requests.Add(request);
-            RequestBodies.Add(request.Content is null
-                ? string.Empty
-                : await request.Content.ReadAsStringAsync(cancellationToken));
 
             if (_responses.Count == 0)
             {
@@ -165,7 +141,7 @@ public sealed class TodoTaskServiceTests
             response.RequestMessage = request;
             response.Headers.Date ??= DateTimeOffset.UtcNow;
             response.Content.Headers.ContentType ??= new MediaTypeHeaderValue("application/json");
-            return response;
+            return Task.FromResult(response);
         }
     }
 }

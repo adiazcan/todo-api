@@ -66,16 +66,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Add contract coverage for validation and dependency failure envelopes in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/CreateTaskFailureContractTests.cs`
-- [ ] T019 [P] [US2] Add integration coverage for blank text, blank list ID, unauthorized access, and Graph failures in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskFailureTests.cs`
-- [ ] T020 [P] [US2] Add unit coverage for request validation and error classification in `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/Validation/CreateTaskRequestValidatorTests.cs` and `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/Services/TodoErrorMapperTests.cs`
+- [x] T018 [P] [US2] Add contract coverage for validation and dependency failure envelopes in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/CreateTaskFailureContractTests.cs`
+- [x] T019 [P] [US2] Add integration coverage for blank text, blank list ID, unauthorized access, and Graph failures in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskFailureTests.cs`
+- [x] T020 [P] [US2] Add unit coverage for request validation and error classification in `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/Validation/CreateTaskRequestValidatorTests.cs` and `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/Services/TodoErrorMapperTests.cs`
 
 ### Implementation for User Story 2
 
-- [ ] T021 [P] [US2] Implement request validation and caller-correctable failure modeling in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/CreateTaskRequestValidator.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/ValidationResult.cs`
-- [ ] T022 [P] [US2] Implement list-resolution, token-refresh, and Graph failure translation in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoTaskService.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoErrorMapper.cs`
-- [ ] T023 [US2] Update `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Functions/CreateTaskFunction.cs` to return definitive `400`, `401`, `502`, and `503` responses for failure paths
-- [ ] T024 [US2] Add structured logging for validation, authentication, and upstream dependency failures in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Functions/CreateTaskFunction.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoTaskService.cs`
+- [x] T021 [P] [US2] Implement request validation and caller-correctable failure modeling in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/CreateTaskRequestValidator.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/ValidationResult.cs`
+- [x] T022 [P] [US2] Implement list-resolution, token-refresh, and Graph failure translation in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoTaskService.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoErrorMapper.cs`
+- [x] T023 [US2] Update `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Functions/CreateTaskFunction.cs` to return definitive `400`, `401`, `502`, and `503` responses for failure paths
+- [x] T024 [US2] Add structured logging for validation, authentication, and upstream dependency failures in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Functions/CreateTaskFunction.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoTaskService.cs`
 
 **Checkpoint**: User Story 2 reports clear success or failure outcomes without false positives and without creating tasks on rejected requests.
 
@@ -89,15 +89,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T025 [P] [US3] Add contract coverage for the minimal request body and unknown-field rejection in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/CreateTaskMinimalPayloadContractTests.cs`
-- [ ] T026 [P] [US3] Add integration coverage for minimal payload acceptance and exactly-one-create behavior in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskMinimalPayloadTests.cs`
-- [ ] T027 [P] [US3] Add unit coverage for single-create execution guarantees in `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/Services/TodoTaskServiceSingleCreateTests.cs`
+- [x] T025 [P] [US3] Add contract coverage for the minimal request body and unknown-field rejection in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/CreateTaskMinimalPayloadContractTests.cs`
+- [x] T026 [P] [US3] Add integration coverage for minimal payload acceptance and exactly-one-create behavior in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskMinimalPayloadTests.cs`
+- [x] T027 [P] [US3] Add unit coverage for single-create execution guarantees in `/home/adiazcan/github/todo-api/tests/TodoApi.UnitTests/Services/TodoTaskServiceSingleCreateTests.cs`
 
 ### Implementation for User Story 3
 
-- [ ] T028 [P] [US3] Enforce strict JSON payload handling and trimmed-only normalization in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/CreateTaskRequest.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Program.cs`
-- [ ] T029 [P] [US3] Update `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoTaskService.cs` to validate the target list before issuing one Graph create call per successful request
-- [ ] T030 [US3] Restrict the success payload to the published v1 fields in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Functions/CreateTaskFunction.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/CreateTaskSuccessResponse.cs`
+- [x] T028 [P] [US3] Enforce strict JSON payload handling and trimmed-only normalization in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/CreateTaskRequest.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Program.cs`
+- [x] T029 [P] [US3] Update `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Services/TodoTaskService.cs` to validate the target list before issuing one Graph create call per successful request
+- [x] T030 [US3] Restrict the success payload to the published v1 fields in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Functions/CreateTaskFunction.cs` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/Contracts/CreateTaskSuccessResponse.cs`
 
 **Checkpoint**: User Story 3 accepts the minimal v1 request shape, rejects unsupported input, and guarantees one created task per successful request.
 
@@ -107,14 +107,14 @@
 
 **Purpose**: Finish documentation, production hardening, and end-to-end validation across all stories.
 
-- [ ] T031 [P] Update setup and deployment guidance in `/home/adiazcan/github/todo-api/README.md` and `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md`
-- [ ] T032 [P] Add bootstrap utility usage and secret-installation guidance in `/home/adiazcan/github/todo-api/tools/TodoApi.AuthBootstrap/README.md`
-- [ ] T033 [P] Harden hosting, timeout, and authentication defaults in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/host.json` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/local.settings.json.example`
-- [ ] T034 Document quickstart validation outcomes and deployment notes in `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md` and `/home/adiazcan/github/todo-api/README.md`
-- [ ] T035 [P] Add Microsoft To Do boundary contract coverage for Graph request and response translation in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/GraphBoundaryContractTests.cs`
-- [ ] T036 [P] Add Siri Shortcuts-compatible payload schema contract coverage for the published task-creation request in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/SiriPayloadContractTests.cs`
-- [ ] T037 [P] Add performance and concurrency validation for the 5-second response target and 100-concurrent-request bursts in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskPerformanceTests.cs` and `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md`
-- [ ] T038 [P] Validate the first-time integrator quickstart flow against the published request and response contract in `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md` and `/home/adiazcan/github/todo-api/README.md`
+- [x] T031 [P] Update setup and deployment guidance in `/home/adiazcan/github/todo-api/README.md` and `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md`
+- [x] T032 [P] Add bootstrap utility usage and secret-installation guidance in `/home/adiazcan/github/todo-api/tools/TodoApi.AuthBootstrap/README.md`
+- [x] T033 [P] Harden hosting, timeout, and authentication defaults in `/home/adiazcan/github/todo-api/src/TodoApi.Functions/host.json` and `/home/adiazcan/github/todo-api/src/TodoApi.Functions/local.settings.json.example`
+- [x] T034 Document quickstart validation outcomes and deployment notes in `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md` and `/home/adiazcan/github/todo-api/README.md`
+- [x] T035 [P] Add Microsoft To Do boundary contract coverage for Graph request and response translation in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/GraphBoundaryContractTests.cs`
+- [x] T036 [P] Add Siri Shortcuts-compatible payload schema contract coverage for the published task-creation request in `/home/adiazcan/github/todo-api/tests/TodoApi.ContractTests/SiriPayloadContractTests.cs`
+- [x] T037 [P] Add performance and concurrency validation for the 5-second response target and 100-concurrent-request bursts in `/home/adiazcan/github/todo-api/tests/TodoApi.IntegrationTests/CreateTaskPerformanceTests.cs` and `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md`
+- [x] T038 [P] Validate the first-time integrator quickstart flow against the published request and response contract in `/home/adiazcan/github/todo-api/specs/001-todo-task-api/quickstart.md` and `/home/adiazcan/github/todo-api/README.md`
 
 ---
 

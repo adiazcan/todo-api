@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,6 +14,12 @@ var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         services.AddOptions();
+        services.Configure<JsonSerializerOptions>(options =>
+        {
+            options.PropertyNameCaseInsensitive = true;
+            options.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow;
+            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        });
         services.AddSingleton<IConfigureOptions<GraphOptions>, GraphOptionsSetup>();
         services.AddSingleton<IValidateOptions<GraphOptions>, GraphOptionsSetup>();
         services.AddOptions<GraphOptions>().ValidateOnStart();
@@ -35,6 +43,7 @@ var host = new HostBuilder()
             serviceProvider.GetRequiredService<GraphServiceClientFactory>().CreateClient());
         services.AddSingleton<ITodoTaskService, TodoTaskService>();
         services.AddSingleton<TodoErrorMapper>();
+        services.AddSingleton<CreateTaskRequestValidator>();
         services.AddSingleton<ApiResponseFactory>();
     })
     .ConfigureLogging(logging =>

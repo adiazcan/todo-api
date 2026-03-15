@@ -7,82 +7,77 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using TodoApi.Functions.Contracts;
 using TodoApi.Functions.Functions;
 using TodoApi.Functions.Services;
 using Xunit;
 
 namespace TodoApi.IntegrationTests;
 
-public sealed class CreateTaskSuccessTests
+public sealed class CreateTaskMinimalPayloadTests
 {
     [Fact]
-    public async Task RunAsync_should_return_created_payload_for_a_successful_task_creation()
+    public async Task RunAsync_should_accept_the_minimal_published_request_body()
     {
-        var todoTaskService = new CapturingTodoTaskService
-        {
-            Result = new CreatedTodoTask(
-                Id: "task-123",
-                Title: "Buy milk",
-                ListId: "list-456",
-                ListName: "Errands",
-                CreatedAtUtc: DateTimeOffset.Parse("2026-03-14T10:15:30Z"))
-        };
-
-            var function = CreateFunction(todoTaskService);
-        var request = TestHttpData.CreateRequest(new CreateTaskRequest
-        {
-            Text = "Buy milk",
-            ListId = "list-456"
-        });
+        var todoTaskService = new CountingTodoTaskService();
+        var function = CreateFunction(todoTaskService);
+        var request = TestHttpData.CreateJsonRequest("""
+            {
+              "text": "Pick up groceries",
+              "listId": "list-456"
+            }
+            """);
 
         var response = await function.RunAsync(request, CancellationToken.None);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+        todoTaskService.InvocationCount.Should().Be(1);
 
         var payload = await TestHttpData.ReadJsonAsync(response.Body);
         payload.GetProperty("success").GetBoolean().Should().BeTrue();
         payload.GetProperty("data").GetProperty("taskId").GetString().Should().Be("task-123");
-        payload.GetProperty("data").GetProperty("listId").GetString().Should().Be("list-456");
-        payload.GetProperty("data").GetProperty("listName").GetString().Should().Be("Errands");
     }
 
     [Fact]
-    public async Task RunAsync_should_trim_text_and_list_id_before_dispatching_to_the_service()
+    public async Task RunAsync_should_reject_unknown_request_fields()
     {
-        var todoTaskService = new CapturingTodoTaskService();
+        var todoTaskService = new CountingTodoTaskService();
         var function = CreateFunction(todoTaskService);
-        var request = TestHttpData.CreateRequest(new CreateTaskRequest
-        {
-            Text = "  Call the dentist  ",
-            ListId = "  list-123  "
-        });
+        var request = TestHttpData.CreateJsonRequest("""
+            {
+              "text": "Pick up groceries",
+              "listId": "list-456",
+              "priority": "high"
+            }
+            """);
 
-        _ = await function.RunAsync(request, CancellationToken.None);
+        var response = await function.RunAsync(request, CancellationToken.None);
 
-        todoTaskService.LastCommand.Should().NotBeNull();
-        todoTaskService.LastCommand!.Title.Should().Be("Call the dentist");
-        todoTaskService.LastCommand.ListId.Should().Be("list-123");
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        todoTaskService.InvocationCount.Should().Be(0);
+
+        var payload = await TestHttpData.ReadJsonAsync(response.Body);
+        payload.GetProperty("error").GetProperty("code").GetString().Should().Be("validation.invalid_request");
     }
 
     [Fact]
-    public async Task RunAsync_should_preserve_multiline_and_punctuation_when_normalizing_text()
+    public async Task RunAsync_should_dispatch_exactly_one_create_operation_for_a_successful_request()
     {
-        var todoTaskService = new CapturingTodoTaskService();
+        var todoTaskService = new CountingTodoTaskService();
         var function = CreateFunction(todoTaskService);
-        var request = TestHttpData.CreateRequest(new CreateTaskRequest
-        {
-            Text = "  Review agenda:\n- budget?\n- launch!  ",
-            ListId = "list-789"
-        });
+        var request = TestHttpData.CreateJsonRequest("""
+            {
+              "text": "Pick up groceries",
+              "listId": "list-456"
+            }
+            """);
 
-        _ = await function.RunAsync(request, CancellationToken.None);
+        var response = await function.RunAsync(request, CancellationToken.None);
 
-        todoTaskService.LastCommand.Should().NotBeNull();
-        todoTaskService.LastCommand!.Title.Should().Be("Review agenda:\n- budget?\n- launch!");
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        todoTaskService.InvocationCount.Should().Be(1);
     }
 
-    private static CreateTaskFunction CreateFunction(CapturingTodoTaskService todoTaskService)
+    private static CreateTaskFunction CreateFunction(CountingTodoTaskService todoTaskService)
     {
         return new CreateTaskFunction(
             todoTaskService,
@@ -92,27 +87,25 @@ public sealed class CreateTaskSuccessTests
             NullLogger<CreateTaskFunction>.Instance);
     }
 
-    private sealed class CapturingTodoTaskService : ITodoTaskService
+    private sealed class CountingTodoTaskService : ITodoTaskService
     {
-        public NormalizedTaskCommand? LastCommand { get; private set; }
-
-        public CreatedTodoTask Result { get; set; } = new(
-            Id: "task-123",
-            Title: "Buy milk",
-            ListId: "list-456",
-            ListName: "Errands",
-            CreatedAtUtc: DateTimeOffset.Parse("2026-03-14T10:15:30Z"));
+        public int InvocationCount { get; private set; }
 
         public Task<CreatedTodoTask> CreateTaskAsync(NormalizedTaskCommand command, CancellationToken cancellationToken = default)
         {
-            LastCommand = command;
-            return Task.FromResult(Result);
+            InvocationCount++;
+            return Task.FromResult(new CreatedTodoTask(
+                Id: "task-123",
+                Title: command.Title,
+                ListId: command.ListId,
+                ListName: "Errands",
+                CreatedAtUtc: DateTimeOffset.Parse("2026-03-14T10:15:30Z")));
         }
     }
 
     private static class TestHttpData
     {
-        public static HttpRequestData CreateRequest(CreateTaskRequest payload)
+        public static HttpRequestData CreateJsonRequest(string json)
         {
             var context = new Mock<FunctionContext>();
             var responseStream = new MemoryStream();
@@ -123,7 +116,7 @@ public sealed class CreateTaskSuccessTests
             response.SetupGet(item => item.Body).Returns(responseStream);
             response.SetupGet(item => item.Cookies).Returns(Mock.Of<HttpCookies>());
 
-            var body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(payload)));
+            var body = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
             var request = new Mock<HttpRequestData>(context.Object);
             request.SetupGet(item => item.Body).Returns(body);

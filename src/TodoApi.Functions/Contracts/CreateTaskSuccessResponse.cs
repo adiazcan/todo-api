@@ -26,5 +26,6 @@ public sealed class CreateTaskSuccessData
     public required string ListName { get; init; }
 
     [JsonPropertyName("createdAtUtc")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTimeOffset? CreatedAtUtc { get; init; }
 }

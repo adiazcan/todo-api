@@ -51,14 +51,22 @@ public sealed class GraphOptionsSetup : IConfigureNamedOptions<GraphOptions>, IV
             failures.Add("TodoApi:Graph:ClientId is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(options.ClientSecret))
+        var hasSerializedUserTokenCache = !string.IsNullOrWhiteSpace(options.UserTokenCache);
+        var hasRefreshToken = !string.IsNullOrWhiteSpace(options.RefreshToken);
+
+        if (!hasSerializedUserTokenCache && !hasRefreshToken)
         {
-            failures.Add("TodoApi:Graph:ClientSecret is required.");
+            failures.Add("TodoApi:Graph:UserTokenCache or TodoApi:Graph:RefreshToken is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(options.RefreshToken))
+        if (hasSerializedUserTokenCache && !IsBase64(options.UserTokenCache))
         {
-            failures.Add("TodoApi:Graph:RefreshToken is required.");
+            failures.Add("TodoApi:Graph:UserTokenCache must be a valid Base64-encoded MSAL cache payload.");
+        }
+
+        if (hasRefreshToken && string.IsNullOrWhiteSpace(options.ClientSecret))
+        {
+            failures.Add("TodoApi:Graph:ClientSecret is required when TodoApi:Graph:RefreshToken is configured.");
         }
 
         if (options.Scopes.Length == 0)
@@ -112,5 +120,11 @@ public sealed class GraphOptionsSetup : IConfigureNamedOptions<GraphOptions>, IV
             .Split([' ', ',', ';', '\n', '\r', '\t'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
+    }
+
+    private static bool IsBase64(string value)
+    {
+        Span<byte> buffer = stackalloc byte[Math.Max(1, value.Length)];
+        return Convert.TryFromBase64String(value, buffer, out _);
     }
 }

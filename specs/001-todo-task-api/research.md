@@ -26,9 +26,9 @@
 
 ## Delegated Token Strategy
 
-- Decision: Use an Entra app registration plus delegated user consent with `offline_access`, persist the refresh token securely, and acquire access tokens at runtime via MSAL before constructing the Graph client.
-- Rationale: Microsoft identity documentation states that `offline_access` is required to receive refresh tokens in the v2 authorization code flow, and MSAL is the recommended library for token acquisition, caching, and refresh. This matches the feature requirement to always use one preconfigured account without requiring per-request user sign-in.
-- Alternatives considered: On-behalf-of flow was rejected because the API caller is not expected to bring the configured account's user token. Client credentials were rejected because the To Do create API does not support app-only permissions.
+- Decision: Use an Entra app registration plus delegated user consent with `offline_access`, persist the serialized MSAL user token cache securely, and acquire access tokens at runtime via MSAL silent token acquisition before constructing the Graph client.
+- Rationale: Microsoft identity documentation states that `offline_access` is required for long-lived delegated renewal capability and that MSAL manages refresh tokens inside its user token cache rather than exposing them directly. Persisting the serialized MSAL cache matches the bootstrap utility flow and still allows silent renewal without per-request user sign-in.
+- Alternatives considered: On-behalf-of flow was rejected because the API caller is not expected to bring the configured account's user token. Direct raw refresh-token handling was rejected as the primary design because MSAL.NET does not expose refresh tokens for general copy-paste usage.
 
 ## Siri Shortcut Caller Authentication
 
@@ -38,21 +38,21 @@
 
 ## One-Time Graph Consent Bootstrap
 
-- Decision: Perform Microsoft account authentication once through a local bootstrap console utility, using MSAL and an interactive delegated consent flow for `Tasks.ReadWrite` and `offline_access`, then store the resulting token material securely for backend use.
-- Rationale: This keeps setup simple for a personal Siri-driven workflow and avoids building or hosting a custom setup web page. The operator still completes Microsoft sign-in once, but only during setup. After that, the backend can continue operating silently by reusing the stored token material.
+- Decision: Perform Microsoft account authentication once through a local bootstrap console utility, using MSAL and a device-code delegated consent flow for `Tasks.ReadWrite` and `offline_access`, then store the resulting serialized MSAL user token cache securely for backend use.
+- Rationale: This keeps setup simple for a personal Siri-driven workflow and avoids building or hosting a custom setup web page. The operator still completes Microsoft sign-in once, but only during setup. After that, the backend can continue operating silently by reusing the stored MSAL cache.
 - Alternatives considered: A dedicated setup web page was rejected because the chosen direction is to avoid a hosted auth UI. Reauthenticating on every Siri call was rejected because it would make the shortcut impractical.
 
 ## Bootstrap Utility UX
 
 - Decision: Use a console-based setup utility as the explicit operator workflow for first-time Microsoft consent.
-- Rationale: A console utility is the smallest maintainable artifact that can guide the operator through first-run consent, persist the resulting token cache or refresh-token material, and then exit. It satisfies the one-time setup requirement without introducing another deployed surface.
+- Rationale: A console utility is the smallest maintainable artifact that can guide the operator through first-run consent, persist the resulting serialized MSAL user token cache, and then exit. It satisfies the one-time setup requirement without introducing another deployed surface.
 - Alternatives considered: Manual token copy/paste processes were rejected because they are brittle and easy to misconfigure.
 
 ## Runtime Token Renewal
 
-- Decision: Use MSAL in the backend to silently renew Graph access tokens from the stored refresh token or serialized token cache before each Graph call.
+- Decision: Use MSAL in the backend to silently renew Graph access tokens from the stored serialized user token cache before each Graph call.
 - Rationale: Microsoft recommends MSAL for production token handling, and MSAL manages token caching and refresh behavior so the API can continue acting on behalf of the configured user without interactive sign-in.
-- Alternatives considered: Manually coding raw token refresh requests was rejected because it adds avoidable protocol complexity and error-handling risk.
+- Alternatives considered: Manually coding raw token refresh requests was rejected because it adds avoidable protocol complexity and error-handling risk. A refresh-token-only configuration remains available only as a migration fallback.
 
 ## Unsuitable Auth Patterns For This Scenario
 

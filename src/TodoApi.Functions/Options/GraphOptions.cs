@@ -12,6 +12,10 @@ public sealed class GraphOptions
 
     public string ClientSecret { get; set; } = string.Empty;
 
+    public string UserTokenCache { get; set; } = string.Empty;
+
+    public string AccountUsername { get; set; } = string.Empty;
+
     public string RefreshToken { get; set; } = string.Empty;
 
     public string[] Scopes { get; set; } = [DefaultTasksReadWriteScope, OfflineAccessScope];

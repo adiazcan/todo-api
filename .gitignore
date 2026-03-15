@@ -11,6 +11,9 @@
 *.sln.docstates
 *.env
 .env*
+.DS_Store
+Thumbs.db
+*.swp
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -433,3 +436,4 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+tools/TodoApi.AuthBootstrap/appsettings.json

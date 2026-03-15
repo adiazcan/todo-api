@@ -78,9 +78,22 @@ public sealed class GraphRetryHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        // Only retry idempotent methods (GET/HEAD) to prevent duplicate resource creation on non-idempotent requests
+        if (request.Method != HttpMethod.Get && request.Method != HttpMethod.Head)
+        {
+            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        }
+
+        // Buffer content bytes once before the retry loop so non-rewindable streams are not consumed on the first attempt
+        byte[]? bufferedContent = null;
+        if (request.Content is not null)
+        {
+            bufferedContent = await request.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         for (var attempt = 0; attempt <= _options.MaxRetryAttempts; attempt++)
         {
-            using var clonedRequest = await CloneRequestAsync(request, cancellationToken).ConfigureAwait(false);
+            using var clonedRequest = CloneRequest(request, bufferedContent);
 
             try
             {
@@ -146,7 +159,7 @@ public sealed class GraphRetryHandler : DelegatingHandler
         return TimeSpan.FromMilliseconds(Math.Min(1000 * Math.Pow(2, attempt), 4000));
     }
 
-    private static async Task<HttpRequestMessage> CloneRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    private static HttpRequestMessage CloneRequest(HttpRequestMessage request, byte[]? bufferedContent)
     {
         var clone = new HttpRequestMessage(request.Method, request.RequestUri)
         {
@@ -159,12 +172,11 @@ public sealed class GraphRetryHandler : DelegatingHandler
             clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
         }
 
-        if (request.Content is not null)
+        if (bufferedContent is not null)
         {
-            var contentBytes = await request.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
-            clone.Content = new ByteArrayContent(contentBytes);
+            clone.Content = new ByteArrayContent(bufferedContent);
 
-            foreach (var header in request.Content.Headers)
+            foreach (var header in request.Content!.Headers)
             {
                 clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }

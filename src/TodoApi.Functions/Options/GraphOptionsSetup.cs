@@ -1,3 +1,4 @@
+using System.Buffers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -136,7 +137,14 @@ public sealed class GraphOptionsSetup : IConfigureNamedOptions<GraphOptions>, IV
 
     private static bool IsBase64(string value)
     {
-        Span<byte> buffer = stackalloc byte[Math.Max(1, value.Length)];
-        return Convert.TryFromBase64String(value, buffer, out _);
+        var buffer = ArrayPool<byte>.Shared.Rent(Math.Max(1, value.Length));
+        try
+        {
+            return Convert.TryFromBase64String(value, buffer, out _);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
     }
 }

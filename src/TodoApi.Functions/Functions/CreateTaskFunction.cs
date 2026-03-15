@@ -1,9 +1,9 @@
 using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using TodoApi.Functions.Contracts;
 using TodoApi.Functions.Services;
 
@@ -11,12 +11,7 @@ namespace TodoApi.Functions.Functions;
 
 public sealed class CreateTaskFunction
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web)
-    {
-        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
-
+    private readonly JsonSerializerOptions _serializerOptions;
     private readonly ITodoTaskService _todoTaskService;
     private readonly CreateTaskRequestValidator _requestValidator;
     private readonly TodoErrorMapper _todoErrorMapper;
@@ -24,12 +19,14 @@ public sealed class CreateTaskFunction
     private readonly ILogger<CreateTaskFunction> _logger;
 
     public CreateTaskFunction(
+        IOptions<JsonSerializerOptions> serializerOptions,
         ITodoTaskService todoTaskService,
         CreateTaskRequestValidator requestValidator,
         TodoErrorMapper todoErrorMapper,
         ApiResponseFactory apiResponseFactory,
         ILogger<CreateTaskFunction> logger)
     {
+        _serializerOptions = serializerOptions.Value;
         _todoTaskService = todoTaskService;
         _requestValidator = requestValidator;
         _todoErrorMapper = todoErrorMapper;
@@ -51,7 +48,7 @@ public sealed class CreateTaskFunction
             {
                 payload = await JsonSerializer.DeserializeAsync<CreateTaskRequest>(
                     request.Body,
-                    SerializerOptions,
+                    _serializerOptions,
                     cancellationToken).ConfigureAwait(false);
             }
             catch (JsonException exception)
@@ -83,9 +80,12 @@ public sealed class CreateTaskFunction
                 createdTask.ListName,
                 createdTask.CreatedAtUtc);
 
-            await JsonSerializer.SerializeAsync(response.Body, payloadResponse, SerializerOptions, cancellationToken).ConfigureAwait(false);
+            await JsonSerializer.SerializeAsync(response.Body, payloadResponse, _serializerOptions, cancellationToken).ConfigureAwait(false);
             await response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
-            response.Body.Position = 0;
+            if (response.Body.CanSeek)
+            {
+                response.Body.Position = 0;
+            }
 
             _logger.LogInformation(
                 "Created task {TaskId} in list {ListId}.",
@@ -133,9 +133,12 @@ public sealed class CreateTaskFunction
         response.Headers.Add("Content-Type", "application/json; charset=utf-8");
 
         var payload = _apiResponseFactory.CreateError(failure.Error);
-        await JsonSerializer.SerializeAsync(response.Body, payload, SerializerOptions, cancellationToken).ConfigureAwait(false);
+        await JsonSerializer.SerializeAsync(response.Body, payload, _serializerOptions, cancellationToken).ConfigureAwait(false);
         await response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
-        response.Body.Position = 0;
+        if (response.Body.CanSeek)
+        {
+            response.Body.Position = 0;
+        }
 
         return response;
     }
